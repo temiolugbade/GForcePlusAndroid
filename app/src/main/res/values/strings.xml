@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GForceProfileDemo</string>
+    <string name="app_name">CX-GForce-Oymotion</string>
     <string name="connection_state">State: %s</string>
     <string name="dev_name_with_mac">%s - %s</string>
     <string name="start_scan">Start Scan</string>

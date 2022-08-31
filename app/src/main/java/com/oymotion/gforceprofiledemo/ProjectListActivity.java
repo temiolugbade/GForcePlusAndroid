@@ -115,6 +115,7 @@ public class ProjectListActivity extends AppCompatActivity implements AddProject
         initView();
         updateCurrentProject();
 
+
     }
 
     private void initData() {

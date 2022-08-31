@@ -51,13 +51,15 @@ public class MainActivity extends AppCompatActivity {
         permissionCheck = this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
         permissionCheck += this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
         permissionCheck += this.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+        permissionCheck += this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
             //未获得权限
             this.requestPermissions( // 请求授权
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.READ_EXTERNAL_STORAGE},
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     ACCESS_LOCATION);// 自定义常量,任意整型
         }
     }

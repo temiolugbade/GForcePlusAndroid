@@ -55,6 +55,18 @@ public class Device {
     }
 
 
+    public static boolean checkDeviceLROther(SQLiteDatabase db, String hand) {
+        Cursor cursor = db.query("Device", new String[]{"mac_address"}, "type = ?", new String[]{hand}, null, null, null, null);
+
+        boolean hand_added = false;
+
+        if (cursor.moveToFirst()) {
+            hand_added = true;
+        }
+        return hand_added;
+    }
+
+
     public static String getTAG() {
         return TAG;
     }

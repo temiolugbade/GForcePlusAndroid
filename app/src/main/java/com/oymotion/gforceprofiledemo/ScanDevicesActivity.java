@@ -78,13 +78,15 @@ public class ScanDevicesActivity extends AppCompatActivity {
         permissionCheck = this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
         permissionCheck += this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
         permissionCheck += this.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+        permissionCheck += this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
             //未获得权限
             this.requestPermissions( // 请求授权
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.READ_EXTERNAL_STORAGE},
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     ACCESS_LOCATION);// 自定义常量,任意整型
         }
     }
@@ -113,6 +115,7 @@ public class ScanDevicesActivity extends AppCompatActivity {
         try {
             dbHelper = new GForceDatabaseOpenHelper(this, "GForce.db", null, 1);
             db = dbHelper.getWritableDatabase();
+            db.delete("Device", null, null);
         }catch (Exception e){
             Log.e(TAG, e.getMessage());
         }
@@ -304,15 +307,24 @@ public class ScanDevicesActivity extends AppCompatActivity {
         //test for save bluetooth devices info and transfer
         String extra_device_name = scanResults.getBluetoothDevice().getName();
         String extra_mac_address = scanResults.getBluetoothDevice().getAddress();
-        int hand = Device.checkDeviceLR(db, extra_mac_address);
+        int left_hand = 0;
+        int right_hand = 1;
+        boolean left_hand_added = Device.checkDeviceLROther(db, String.valueOf(left_hand));
+        boolean right_hand_added = Device.checkDeviceLROther(db, String.valueOf(right_hand));
         if(!isSelected(extra_mac_address)) {
-            if (hand == 0){
+            if (!left_hand_added){
                 leftSelected.setBackground(getDrawable(R.drawable.round_purple));
-            }else if(hand == 1){
+                Device.insertDeviceInfo(db, left_hand, extra_device_name, extra_mac_address, left_hand);
+                btList.add(new Device(extra_device_name,extra_mac_address,left_hand));
+                count_selected ++;
+            }else if(!right_hand_added){
                 rightSelected.setBackground(getDrawable(R.drawable.round_purple));
+                Device.insertDeviceInfo(db, left_hand, extra_device_name, extra_mac_address, right_hand);
+                btList.add(new Device(extra_device_name,extra_mac_address,right_hand));
+                count_selected ++;
             }
-            btList.add(new Device(extra_device_name,extra_mac_address,hand));
-            count_selected ++;
+
+
         }
         if(count_selected == 2){
             nextButton.setEnabled(true);

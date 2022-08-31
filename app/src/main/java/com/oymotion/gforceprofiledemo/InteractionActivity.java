@@ -93,6 +93,9 @@ public class InteractionActivity extends AppCompatActivity {
 
     private Interaction interaction;
 
+    private FileWritingThread mFileWriteThread;
+    private Handler mFileWriteHandler;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,6 +171,12 @@ public class InteractionActivity extends AppCompatActivity {
             }
         };
         handler.post(runnable);
+
+
+        mFileWriteThread = new FileWritingThread("FileWritingThread");
+        mFileWriteThread.start();
+        mFileWriteHandler = mFileWriteThread.getHandler();
+
 
 
     }
@@ -288,6 +297,8 @@ public class InteractionActivity extends AppCompatActivity {
                 }
             }.start();
 //            handler.postDelayed(runnable_data_notify, 5000);
+
+
         }
     }
 
@@ -380,9 +391,11 @@ public class InteractionActivity extends AppCompatActivity {
             public void onData(byte[] data) {
                 Log.i(TAG, "data type: " + data[0] + ", len: " + data.length);
 
+                String datetime = DatabaseUtil.getDateTime();
+
                 if (data[0] == GForceProfile.NotifDataType.NTF_QUAT_FLOAT_DATA && data.length == 17) {
-                    Log.i(TAG, "Quat data: " + Arrays.toString(data) + "\nhand use: " + hand);
-                    Log.i(TAG, "hand use: " + hand);
+                    //Log.i(TAG, "Quat data: " + Arrays.toString(data) + "\nhand use: " + hand);
+                    //Log.i(TAG, "hand use: " + hand);
 
                     byte[] W = new byte[4];
                     byte[] X = new byte[4];
@@ -400,9 +413,11 @@ public class InteractionActivity extends AppCompatActivity {
                     float z = getFloat(Z);
 
                     if (hand == 0) {
-                        Log.i(TAG, "#####LEFT QUAT####" + +w + "\nX: " + x + "\nY: " + y + "\nZ: " + z);
+                        //Log.i(TAG, "#####LEFT QUAT####" + +w + "\nX: " + x + "\nY: " + y + "\nZ: " + z);
+                        boolean donothing = true;
                     } else if (hand == 1) {
-                        Log.i(TAG, "****RIGHT QUAT****" + +w + "\nX: " + x + "\nY: " + y + "\nZ: " + z);
+                        //Log.i(TAG, "****RIGHT QUAT****" + +w + "\nX: " + x + "\nY: " + y + "\nZ: " + z);
+                        boolean donothing = true;
                     }
 
                     ContentValues values = new ContentValues();
@@ -418,8 +433,11 @@ public class InteractionActivity extends AppCompatActivity {
                     values.put("z", z);
                     values.put("raw_data", data);//store raw data
                     values.put("state", 0);
-                    values.put("timestamp", DatabaseUtil.getTimestamp());
-                    System.out.println(db.insert("Quaternion", null, values));
+                    values.put("timestamp", datetime);
+                    //System.out.println(db.insert("Quaternion", null, values));
+                    values.put("data_type", "quaternion");
+
+                    queue_to_fileWriter(new ContentValues(values));
                     values.clear();
 
                     runOnUiThread(new Runnable() {
@@ -433,8 +451,8 @@ public class InteractionActivity extends AppCompatActivity {
                     });
 
                 } else if (data[0] == GForceProfile.NotifDataType.NTF_EMG_ADC_DATA && data.length == 129) {
-                    Log.i("DeviceActivity", "EMG data: " + Arrays.toString(data) + "hand use: " + hand);
-                    Log.i("DeviceActivity", "hand use: " + hand);
+                    //Log.i("DeviceActivity", "EMG data: " + Arrays.toString(data) + "hand use: " + hand);
+                    //Log.i("DeviceActivity", "hand use: " + hand);
                     ArrayList<Byte> CH0 = new ArrayList<Byte>(16);
                     ArrayList<Byte> CH1 = new ArrayList<Byte>(16);
                     ArrayList<Byte> CH2 = new ArrayList<Byte>(16);
@@ -501,23 +519,26 @@ public class InteractionActivity extends AppCompatActivity {
                     values.put("ch_08", getEMGList(CH7).toString());
                     values.put("raw_data", data);//store raw data
                     values.put("state", 0);
-                    values.put("timestamp", DatabaseUtil.getTimestamp());
-                    System.out.println(db.insert("EMG", null, values));
+                    values.put("timestamp", datetime);
+                    //System.out.println(db.insert("EMG", null, values));
+                    values.put("data_type", "EMG");
+
+                    queue_to_fileWriter(new ContentValues(values));
                     values.clear();
 
 
-                    Log.i(TAG, "CH0" + getEMGList(CH0).toString());
-                    Log.i(TAG, "CH1" + getEMGList(CH1).toString());
-                    Log.i(TAG, "CH2" + getEMGList(CH2).toString());
-                    Log.i(TAG, "CH3" + getEMGList(CH3).toString());
-                    Log.i(TAG, "CH4" + getEMGList(CH4).toString());
-                    Log.i(TAG, "CH5" + getEMGList(CH5).toString());
-                    Log.i(TAG, "CH6" + getEMGList(CH6).toString());
-                    Log.i(TAG, "CH7" + getEMGList(CH7).toString());
+                    //Log.i(TAG, "CH0" + getEMGList(CH0).toString());
+                    //Log.i(TAG, "CH1" + getEMGList(CH1).toString());
+                    //Log.i(TAG, "CH2" + getEMGList(CH2).toString());
+                    //Log.i(TAG, "CH3" + getEMGList(CH3).toString());
+                    //Log.i(TAG, "CH4" + getEMGList(CH4).toString());
+                    //Log.i(TAG, "CH5" + getEMGList(CH5).toString());
+                    //Log.i(TAG, "CH6" + getEMGList(CH6).toString());
+                    //Log.i(TAG, "CH7" + getEMGList(CH7).toString());
 
                 } else if (data[0] == GForceProfile.NotifDataType.NTF_EULER_DATA && data.length == 13) {
-                    Log.i("DeviceActivity", "NTF_EULER_DATA: " + Arrays.toString(data) + "\nhand use: " + hand);
-                    Log.i("DeviceActivity", "hand use: " + hand);
+                    //Log.i("DeviceActivity", "NTF_EULER_DATA: " + Arrays.toString(data) + "\nhand use: " + hand);
+                    //Log.i("DeviceActivity", "hand use: " + hand);
                     byte[] b_pitch = new byte[4];
                     byte[] b_roll = new byte[4];
                     byte[] b_yaw = new byte[4];
@@ -529,7 +550,7 @@ public class InteractionActivity extends AppCompatActivity {
                     float pitch = getFloat(b_pitch);
                     float roll = getFloat(b_roll);
                     float yaw = getFloat(b_yaw);
-                    Log.i("DeviceActivity", "NTF_EULER_DATA: " + " pitch:" + pitch + " roll:" + roll + " yaw:" + yaw);
+                    //Log.i("DeviceActivity", "NTF_EULER_DATA: " + " pitch:" + pitch + " roll:" + roll + " yaw:" + yaw);
 
                     runOnUiThread(new Runnable() {
                         public void run() {
@@ -545,15 +566,18 @@ public class InteractionActivity extends AppCompatActivity {
                             values.put("yaw", yaw);
                             values.put("raw_data", data);//store raw data
                             values.put("state", 0);
-                            values.put("timestamp", DatabaseUtil.getTimestamp());
+                            values.put("timestamp", datetime);
                             db.insert("Euler_Angle", null, values);
+                            values.put("data_type", "EulerAngles");
+
+                            queue_to_fileWriter(new ContentValues(values));
                             values.clear();
                         }
                     });
 
                 } else if (data[0] == GForceProfile.NotifDataType.NTF_GYO_DATA && data.length == 13) {
-                    Log.i("DeviceActivity", "NTF_GYO_DATA : " + Arrays.toString(data) + "hand use: " + hand);
-                    Log.i("DeviceActivity", "hand use: " + hand);
+                    //Log.i("DeviceActivity", "NTF_GYO_DATA : " + Arrays.toString(data) + "hand use: " + hand);
+                    //Log.i("DeviceActivity", "hand use: " + hand);
                     byte[] b_gyo_x = new byte[4];
                     byte[] b_gyo_y = new byte[4];
                     byte[] b_gyo_z = new byte[4];
@@ -562,15 +586,15 @@ public class InteractionActivity extends AppCompatActivity {
                     System.arraycopy(data, 5, b_gyo_y, 0, 4);
                     System.arraycopy(data, 9, b_gyo_z, 0, 4);
 
-                    System.out.println(Arrays.toString(b_gyo_x));
-                    System.out.println(Arrays.toString(b_gyo_y));
-                    System.out.println(Arrays.toString(b_gyo_z));
+                    //System.out.println(Arrays.toString(b_gyo_x));
+                    //System.out.println(Arrays.toString(b_gyo_y));
+                    //System.out.println(Arrays.toString(b_gyo_z));
 
                     float gyo_x = getFloat2(b_gyo_x);
                     float gyo_y = getFloat2(b_gyo_y);
                     float gyo_z = getFloat2(b_gyo_z);
 
-                    Log.i("DeviceActivity", " NTF_GYO_DATA:" + " gyo_x:" + gyo_x + " gyo_y:" + gyo_y + " gyo_z:" + gyo_z);
+                    //Log.i("DeviceActivity", " NTF_GYO_DATA:" + " gyo_x:" + gyo_x + " gyo_y:" + gyo_y + " gyo_z:" + gyo_z);
                     ContentValues values = new ContentValues();
                     values.put("p_id", p_id);
                     values.put("prj_id", prj_id);
@@ -578,18 +602,21 @@ public class InteractionActivity extends AppCompatActivity {
                     values.put("itr_type", itr_type);
                     values.put("hand", hand);
                     values.put("clt_id", clt_id);
-                    values.put("x", gyo_x);
-                    values.put("y", gyo_y);
-                    values.put("z", gyo_z);
+                    values.put("gyr_x", gyo_x);
+                    values.put("gyr_y", gyo_y);
+                    values.put("gyr_z", gyo_z);
                     values.put("raw_data", data);//store raw data
                     values.put("state", 0);
-                    values.put("timestamp", DatabaseUtil.getTimestamp());
-                    System.out.println(db.insert("Gyroscope", null, values));
+                    values.put("timestamp", datetime);
+                    //System.out.println(db.insert("Gyroscope", null, values));
+                    values.put("data_type", "gyroscope");
+
+                    queue_to_fileWriter(new ContentValues(values));
                     values.clear();
 
                 } else if (data[0] == GForceProfile.NotifDataType.NTF_ACC_DATA && data.length == 13) {
-                    Log.i("DeviceActivity", "NTF_ACC_DATA : " + Arrays.toString(data) + "hand use: " + hand);
-                    Log.i("DeviceActivity", "hand use: " + hand);
+                    //Log.i("DeviceActivity", "NTF_ACC_DATA : " + Arrays.toString(data) + "hand use: " + hand);
+                    //Log.i("DeviceActivity", "hand use: " + hand);
                     byte[] b_acc_x = new byte[4];
                     byte[] b_acc_y = new byte[4];
                     byte[] b_acc_z = new byte[4];
@@ -598,15 +625,15 @@ public class InteractionActivity extends AppCompatActivity {
                     System.arraycopy(data, 5, b_acc_y, 0, 4);
                     System.arraycopy(data, 9, b_acc_z, 0, 4);
 
-                    System.out.println(Arrays.toString(b_acc_x));
-                    System.out.println(Arrays.toString(b_acc_y));
-                    System.out.println(Arrays.toString(b_acc_z));
+                    //System.out.println(Arrays.toString(b_acc_x));
+                    //System.out.println(Arrays.toString(b_acc_y));
+                    //System.out.println(Arrays.toString(b_acc_z));
 
                     float acc_x = getFloat2(b_acc_x);
                     float acc_y = getFloat2(b_acc_y);
                     float acc_z = getFloat2(b_acc_z);
 
-                    Log.i("DeviceActivity", "NTF_ACC_DATA: " + " acc_x:" + acc_x + " acc_y:" + acc_y + " acc_z:" + acc_z);
+                    //Log.i("DeviceActivity", "NTF_ACC_DATA: " + " acc_x:" + acc_x + " acc_y:" + acc_y + " acc_z:" + acc_z);
 
                     ContentValues values = new ContentValues();
                     values.put("p_id", p_id);
@@ -615,18 +642,21 @@ public class InteractionActivity extends AppCompatActivity {
                     values.put("itr_type", itr_type);
                     values.put("hand", hand);
                     values.put("clt_id", clt_id);
-                    values.put("x", acc_x);
-                    values.put("y", acc_y);
-                    values.put("z", acc_z);
+                    values.put("acc_x", acc_x);
+                    values.put("acc_y", acc_y);
+                    values.put("acc_z", acc_z);
                     values.put("raw_data", data);//store raw data
                     values.put("state", 0);
-                    values.put("timestamp", DatabaseUtil.getTimestamp());
-                    System.out.println(db.insert("Acceletor", null, values));
+                    values.put("timestamp", datetime);
+                    //System.out.println(db.insert("Acceletor", null, values));
+                    values.put("data_type", "accelerometer");
+
+                    queue_to_fileWriter(new ContentValues(values));
                     values.clear();
 
                 } else if (data[0] == GForceProfile.NotifDataType.NTF_MAG_DATA && data.length == 13) {
-                    Log.i("DeviceActivity", "NTF_MAG_DATA : " + Arrays.toString(data));
-                    Log.i("DeviceActivity", "hand use: " + hand + "hand use: " + hand);
+                    //Log.i("DeviceActivity", "NTF_MAG_DATA : " + Arrays.toString(data));
+                    //Log.i("DeviceActivity", "hand use: " + hand + "hand use: " + hand);
                     byte[] b_mag_x = new byte[4];
                     byte[] b_mag_y = new byte[4];
                     byte[] b_mag_z = new byte[4];
@@ -635,14 +665,14 @@ public class InteractionActivity extends AppCompatActivity {
                     System.arraycopy(data, 5, b_mag_y, 0, 4);
                     System.arraycopy(data, 9, b_mag_z, 0, 4);
 
-                    System.out.println(Arrays.toString(b_mag_x));
-                    System.out.println(Arrays.toString(b_mag_y));
-                    System.out.println(Arrays.toString(b_mag_z));
+                    //System.out.println(Arrays.toString(b_mag_x));
+                    //System.out.println(Arrays.toString(b_mag_y));
+                    //System.out.println(Arrays.toString(b_mag_z));
 
                     float mag_x = getFloat2(b_mag_x);
                     float mag_y = getFloat2(b_mag_y);
                     float mag_z = getFloat2(b_mag_z);
-                    Log.i("DeviceActivity", "NTF_MAG_DATA: " + " mag_x:" + mag_x + " mag_y:" + mag_y + " mag_z:" + mag_z);
+                    //Log.i("DeviceActivity", "NTF_MAG_DATA: " + " mag_x:" + mag_x + " mag_y:" + mag_y + " mag_z:" + mag_z);
                     ContentValues values = new ContentValues();
                     values.put("p_id", p_id);
                     values.put("prj_id", prj_id);
@@ -650,21 +680,28 @@ public class InteractionActivity extends AppCompatActivity {
                     values.put("itr_type", itr_type);
                     values.put("hand", hand);
                     values.put("clt_id", clt_id);
-                    values.put("x", mag_x);
-                    values.put("y", mag_y);
-                    values.put("z", mag_z);
+                    values.put("mag_x", mag_x);
+                    values.put("mag_y", mag_y);
+                    values.put("mag_z", mag_z);
                     values.put("raw_data", data);//store raw data
                     values.put("state", 0);
-                    values.put("timestamp", DatabaseUtil.getTimestamp());
-                    System.out.println(db.insert("Magnetometer", null, values));
+                    values.put("timestamp", datetime);
+                    //System.out.println(db.insert("Magnetometer", null, values));
+
+                    values.put("data_type", "magnetometer");
+
+                    queue_to_fileWriter(new ContentValues(values));
                     values.clear();
                 } else if (data[0] == GForceProfile.NotifDataType.NTF_ROTA_DATA && data.length == 37) {
-                    Log.i("DeviceActivity", "NTF_ROTA_DATA : " + Arrays.toString(data) + "hand use: " + hand);
-                    Log.i("DeviceActivity", "hand use: " + hand);
+                    //Log.i("DeviceActivity", "NTF_ROTA_DATA : " + Arrays.toString(data) + "hand use: " + hand);
+                    //Log.i("DeviceActivity", "hand use: " + hand);
+                    boolean donothing = true;
 
                 }
             }
         });
+
+
     }
 
     void updateState() {
@@ -819,5 +856,16 @@ public class InteractionActivity extends AppCompatActivity {
     protected void onResume() {
         handler.postDelayed(runnable, 1000);
         super.onResume();
+    }
+
+    private void queue_to_fileWriter(ContentValues values){
+        mFileWriteHandler.post(new Runnable() {
+            @Override
+            public void run() {
+
+                mFileWriteThread.writeDataToFile(values);
+            }
+        });
+
     }
 }

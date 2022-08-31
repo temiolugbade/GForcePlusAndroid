@@ -9,198 +9,212 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/linearlayout">
+        android:layout_height="match_parent">
+
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="center">
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/linearlayout">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_gravity="center">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Current Project"
+                        android:layout_gravity="center"
+                        android:textSize="20dp"
+                        android:textColor="@color/purple_700"
+                        android:layout_marginBottom="5dp"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:textSize="20dp"
+                            android:textColor="@color/purple_700"
+                            android:layout_marginBottom="5dp"
+                            android:text="Project ID: " />
+                        <TextView
+                            android:id="@+id/tv_prj_id"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:textSize="20dp"
+                            android:textColor="@color/purple_700"
+                            android:layout_marginBottom="5dp"
+                            android:text="Project ID" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:textSize="20dp"
+                            android:textColor="@color/purple_700"
+                            android:layout_marginBottom="5dp"
+                            android:text="Project Name: " />
+                        <TextView
+                            android:id="@+id/tv_prj_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:textSize="20dp"
+                            android:textColor="@color/purple_700"
+                            android:layout_marginBottom="5dp"
+                            android:text="Project Name" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:textSize="20dp"
+                            android:textColor="@color/purple_700"
+                            android:layout_marginBottom="5dp"
+                            android:text="Researcher: " />
+
+                        <TextView
+                            android:id="@+id/tv_researcher"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:textSize="20dp"
+                            android:textColor="@color/purple_700"
+                            android:layout_marginBottom="5dp"
+                            android:text="Researcher" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:textSize="20dp"
+                            android:textColor="@color/purple_700"
+                            android:layout_marginBottom="5dp"
+                            android:text="Explore Time: " />
+
+                        <TextView
+                            android:id="@+id/tv_explore_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:textSize="20dp"
+                            android:textColor="@color/purple_700"
+                            android:layout_marginBottom="5dp"
+                            android:text="Explore Time" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:textSize="20dp"
+                            android:textColor="@color/purple_700"
+                            android:layout_marginBottom="5dp"
+                            android:text="Rating Scale: " />
+
+                        <TextView
+                            android:id="@+id/tv_scale"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:textSize="20dp"
+                            android:textColor="@color/purple_700"
+                            android:layout_marginBottom="5dp"
+                            android:text="scale" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+            <Button
+                android:id="@+id/btn_change_current_project"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="25dp"
+                android:width="@dimen/next_width"
+                android:text="change"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Current Project"
-                android:layout_gravity="center"
-                android:textSize="20dp"
-                android:textColor="@color/purple_700"
-                android:layout_marginBottom="5dp"/>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:textSize="20dp"
-                    android:textColor="@color/purple_700"
-                    android:layout_marginBottom="5dp"
-                    android:text="Project ID: " />
-                <TextView
-                    android:id="@+id/tv_prj_id"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:textSize="20dp"
-                    android:textColor="@color/purple_700"
-                    android:layout_marginBottom="5dp"
-                    android:text="Project ID" />
-
-            </LinearLayout>
+                android:layout_weight="1"/>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="Project"
                     android:layout_gravity="left"
                     android:textSize="20dp"
                     android:textColor="@color/purple_700"
-                    android:layout_marginBottom="5dp"
-                    android:text="Project Name: " />
-                <TextView
-                    android:id="@+id/tv_prj_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:textSize="20dp"
-                    android:textColor="@color/purple_700"
-                    android:layout_marginBottom="5dp"
-                    android:text="Project Name" />
-            </LinearLayout>
+                    android:layout_marginBottom="5dp"/>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:textSize="20dp"
-                    android:textColor="@color/purple_700"
-                    android:layout_marginBottom="5dp"
-                    android:text="Researcher: " />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_project_list"
+                    android:background="@drawable/round_corners_bg"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_gravity="center"
+                    android:scrollbars="vertical"/>
 
-                <TextView
-                    android:id="@+id/tv_researcher"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:textSize="20dp"
-                    android:textColor="@color/purple_700"
-                    android:layout_marginBottom="5dp"
-                    android:text="Researcher" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:textSize="20dp"
-                    android:textColor="@color/purple_700"
-                    android:layout_marginBottom="5dp"
-                    android:text="Explore Time: " />
-
-                <TextView
-                    android:id="@+id/tv_explore_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:textSize="20dp"
-                    android:textColor="@color/purple_700"
-                    android:layout_marginBottom="5dp"
-                    android:text="Explore Time" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:textSize="20dp"
-                    android:textColor="@color/purple_700"
-                    android:layout_marginBottom="5dp"
-                    android:text="Rating Scale: " />
-
-                <TextView
-                    android:id="@+id/tv_scale"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:textSize="20dp"
-                    android:textColor="@color/purple_700"
-                    android:layout_marginBottom="5dp"
-                    android:text="scale" />
+                <Button
+                    android:id="@+id/btn_add_project"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:text="ADD"
+                    android:width="@dimen/next_width"/>
+                <Button
+                    android:id="@+id/btn_back_to_home"
+                    android:layout_width="@dimen/next_width"
+                    android:layout_height="@dimen/et_login_height"
+                    android:layout_gravity="center"
+                    android:text="Back to Log in" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-    </LinearLayout>
-    <Button
-        android:id="@+id/btn_change_current_project"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="25dp"
-        android:width="@dimen/next_width"
-        android:text="change"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Project"
-            android:layout_gravity="left"
-            android:textSize="20dp"
-            android:textColor="@color/purple_700"
-            android:layout_marginBottom="5dp"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_project_list"
-            android:background="@drawable/round_corners_bg"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_gravity="center"
-            android:scrollbars="vertical"/>
-
-        <Button
-            android:id="@+id/btn_add_project"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:text="ADD"
-            android:width="@dimen/next_width"/>
-        <Button
-            android:id="@+id/btn_back_to_home"
-            android:layout_width="@dimen/next_width"
-            android:layout_height="@dimen/et_login_height"
-            android:layout_gravity="center"
-            android:text="Back to Log in" />
-
-    </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
