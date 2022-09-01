@@ -117,7 +117,21 @@ public class FileWritingThread extends HandlerThread {
                         checkData.put(type, true);
                         if(data.containsKey(data_keys)) {
 
-                            tempStore.put(hand+data_keys, data.getAsString(data_keys));
+                            String key = hand+data_keys;
+                            String val = data.getAsString(data_keys);
+
+                            /**
+                            if (type.endsWith("EMG")){
+
+                                System.out.println("XXX --- "+type);
+                                System.out.println("XXX "+val);
+
+                                val = val.substring(1, val.length()-1);
+
+                            }
+                             **/
+
+                            tempStore.put(key, val);
                         }
 
 
@@ -150,9 +164,8 @@ public class FileWritingThread extends HandlerThread {
 
                 if (data.containsKey(hand+data_key)) {
 
-                    Log.d(TAG, hand+data_key);
-                    Log.d(TAG, data.get(hand+data_key));
-                    s.append(data.get(hand+data_key));
+
+                     s.append(data.get(hand+data_key));
 
                 } else {
 

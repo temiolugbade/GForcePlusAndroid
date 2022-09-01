@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jjoe64.graphview.GraphView;
 import com.oymotion.gforceprofile.DataNotificationCallback;
 import com.oymotion.gforceprofile.GForceProfile;
 
@@ -56,6 +57,8 @@ public class InteractionActivity extends AppCompatActivity {
     private TextView tv_countdown_itr;
     private TextView tv_itr_statement;
 
+    private GraphView emg_graphView;
+
     private GForceDatabaseOpenHelper dbHelper;
     private SQLiteDatabase db;
 
@@ -95,6 +98,9 @@ public class InteractionActivity extends AppCompatActivity {
 
     private FileWritingThread mFileWriteThread;
     private Handler mFileWriteHandler;
+
+    private EMGPlottingThread mEMGPlottingThread;
+    private Handler mEMGPlotHandler;
 
 
     @Override
@@ -176,6 +182,20 @@ public class InteractionActivity extends AppCompatActivity {
         mFileWriteThread = new FileWritingThread("FileWritingThread");
         mFileWriteThread.start();
         mFileWriteHandler = mFileWriteThread.getHandler();
+
+
+        emg_graphView = findViewById(R.id.EMG_GraphView);
+        // after adding data to our line graph series.
+        // title for our graph view.
+        emg_graphView.setTitle("EMG Signals");
+        // text color to our graph view.
+        emg_graphView.setTitleColor(R.color.purple_200);
+        // our title text size.
+        emg_graphView.setTitleTextSize(18);
+
+        mEMGPlottingThread = new EMGPlottingThread("EMGPlottingThread", emg_graphView);
+        mEMGPlottingThread.start();
+        mEMGPlotHandler = mEMGPlottingThread.getHandler();
 
 
 
@@ -451,7 +471,7 @@ public class InteractionActivity extends AppCompatActivity {
                     });
 
                 } else if (data[0] == GForceProfile.NotifDataType.NTF_EMG_ADC_DATA && data.length == 129) {
-                    //Log.i("DeviceActivity", "EMG data: " + Arrays.toString(data) + "hand use: " + hand);
+                    Log.i("DeviceActivity", "EMG data: " + Arrays.toString(data) + "hand use: " + hand);
                     //Log.i("DeviceActivity", "hand use: " + hand);
                     ArrayList<Byte> CH0 = new ArrayList<Byte>(16);
                     ArrayList<Byte> CH1 = new ArrayList<Byte>(16);
@@ -462,40 +482,58 @@ public class InteractionActivity extends AppCompatActivity {
                     ArrayList<Byte> CH6 = new ArrayList<Byte>(16);
                     ArrayList<Byte> CH7 = new ArrayList<Byte>(16);
 
+                    int ch_0 = 0;
+                    int ch_1 = 0;
+                    int ch_2 = 0;
+                    int ch_3 = 0;
+                    int ch_4 = 0;
+                    int ch_5 = 0;
+                    int ch_6 = 0;
+                    int ch_7 = 0;
+
+
                     byte[] raw_EMG = new byte[128];
                     System.arraycopy(data, 1, raw_EMG, 0, 128);
                     int count = 0;
                     for (byte i : raw_EMG) {
                         switch (count) {
                             case 0:
+                                ch_0 += new Byte(i).intValue();
                                 CH0.add(i);
                                 count++;
                                 break;
                             case 1:
+                                ch_1 += new Byte(i).intValue();
                                 CH1.add(i);
                                 count++;
                                 break;
                             case 2:
+                                ch_2 += new Byte(i).intValue();
                                 CH2.add(i);
                                 count++;
                                 break;
                             case 3:
+                                ch_3 += new Byte(i).intValue();
                                 CH3.add(i);
                                 count++;
                                 break;
                             case 4:
+                                ch_4 += new Byte(i).intValue();
                                 CH4.add(i);
                                 count++;
                                 break;
                             case 5:
+                                ch_5 += new Byte(i).intValue();
                                 CH5.add(i);
                                 count++;
                                 break;
                             case 6:
+                                ch_6 += new Byte(i).intValue();
                                 CH6.add(i);
                                 count++;
                                 break;
                             case 7:
+                                ch_7 += new Byte(i).intValue();
                                 CH7.add(i);
                                 count = 0;
                                 break;
@@ -524,6 +562,10 @@ public class InteractionActivity extends AppCompatActivity {
                     values.put("data_type", "EMG");
 
                     queue_to_fileWriter(new ContentValues(values));
+
+                    mEMGPlottingThread.plot(hand, ch_0, ch_1, ch_2, ch_3, ch_4, ch_5, ch_6, ch_7);
+
+
                     values.clear();
 
 
@@ -868,4 +910,17 @@ public class InteractionActivity extends AppCompatActivity {
         });
 
     }
+
+
+    private void queue_to_emgPlotter(int hand, int ch0, int ch1, int ch2, int ch3, int ch4, int ch5, int ch6, int ch7){
+        mEMGPlotHandler.post(new Runnable() {
+            @Override
+            public void run() {
+
+                mEMGPlottingThread.plot(hand, ch0, ch1, ch2, ch3, ch4, ch5, ch6, ch7);
+            }
+        });
+
+    }
+
 }
