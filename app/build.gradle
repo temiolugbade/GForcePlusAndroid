@@ -15,7 +15,7 @@ android {
     buildToolsVersion "30.0.2"
 
     defaultConfig {
-        applicationId "com.oymotion.gforceprofiledemo"
+        applicationId "com.oymotion.newgforceprofiledemo"
         minSdkVersion 24
         targetSdkVersion 30
         versionCode 1

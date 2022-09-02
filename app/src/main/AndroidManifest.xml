@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.oymotion.gforceprofiledemo">
+    package="com.oymotion.newgforceprofiledemo">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -21,23 +21,23 @@
         android:required="true" />
 
     <application
-        android:name=".MyApplication"
+        android:name="com.oymotion.newgforceprofiledemo.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GForceProfileDemo">
-        <activity android:name=".EndActivity"></activity>
-        <activity android:name=".ImagePickerActivity" />
-        <activity android:name=".InstructionActivity" />
-        <activity android:name=".test2" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.EndActivity"></activity>
+        <activity android:name="com.oymotion.newgforceprofiledemo.ImagePickerActivity" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.InstructionActivity" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.test2" />
 <!--        <activity android:name=".SurveyActivity" />-->
-        <activity android:name=".SurveyEnjoymentActivity" />
-        <activity android:name=".InteractionActivity" />
-        <activity android:name=".SetupDevicesActivity" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.SurveyEnjoymentActivity" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.InteractionActivity" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.SetupDevicesActivity" />
         <activity
-            android:name=".LoginActivity"
+            android:name="com.oymotion.newgforceprofiledemo.LoginActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.GForceProfileDemo.NoActionBar">
             <intent-filter>
@@ -45,20 +45,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ScanDevicesActivity" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".DeviceActivity" />
-        <activity android:name=".ExperimentSettingMenuActivity" />
-        <activity android:name=".SurveyActivity" />
-        <activity android:name=".ExperimentSettingActivity" android:label="Experiment Setting" />
-        <activity android:name=".ParticipantManageActivity" android:label="Manage Participants" />
-        <activity android:name=".EditPropertiesActivity" android:label="Manage Properties" />
-        <activity android:name=".EditOpenQuestionsActivity" android:label="Manage Question" />
-        <activity android:name=".LoginAsResearcherActivity" android:label="Researcher Login" />
-        <activity android:name=".MaterialListActivity" android:label="Material List" />
-        <activity android:name=".MaterialProfileActivity" android:label="Material profile" />
-        <activity android:name=".ProjectListActivity" android:label="Project List" />
-        <activity android:name=".AnswerDesignQuestionActivity" android:label="Answer Question" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.ScanDevicesActivity" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.MainActivity" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.DeviceActivity" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.ExperimentSettingMenuActivity" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.SurveyActivity" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.ExperimentSettingActivity" android:label="Experiment Setting" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.ParticipantManageActivity" android:label="Manage Participants" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.EditPropertiesActivity" android:label="Manage Properties" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.EditOpenQuestionsActivity" android:label="Manage Question" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.LoginAsResearcherActivity" android:label="Researcher Login" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.MaterialListActivity" android:label="Material List" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.MaterialProfileActivity" android:label="Material profile" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.ProjectListActivity" android:label="Project List" />
+        <activity android:name="com.oymotion.newgforceprofiledemo.AnswerDesignQuestionActivity" android:label="Answer Question" />
     </application>
 
 </manifest>
