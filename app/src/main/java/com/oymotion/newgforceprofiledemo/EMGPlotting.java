@@ -209,8 +209,8 @@ public class EMGPlotting{
         graph.getLegendRenderer().setVisible(true);
 
         graph.getViewport().setYAxisBoundsManual(true);
-        graph.getViewport().setMinY(-128);
-        graph.getViewport().setMaxY(128);
+        graph.getViewport().setMinY(-300);
+        graph.getViewport().setMaxY(300);
 
 
 

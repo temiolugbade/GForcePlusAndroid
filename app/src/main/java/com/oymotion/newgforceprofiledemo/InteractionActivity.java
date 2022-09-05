@@ -522,42 +522,42 @@ public class InteractionActivity extends AppCompatActivity {
                     for (byte i : raw_EMG) {
                         switch (count) {
                             case 0:
-                                ch_0 += new Byte(i).doubleValue();
+                                ch_0 += Double.parseDouble(new Byte(i).toString());
                                 CH0.add(i);
                                 count++;
                                 break;
                             case 1:
-                                ch_1 += new Byte(i).doubleValue();
+                                ch_1 += Double.parseDouble(new Byte(i).toString());
                                 CH1.add(i);
                                 count++;
                                 break;
                             case 2:
-                                ch_2 += new Byte(i).doubleValue();
+                                ch_2 += Double.parseDouble(new Byte(i).toString());
                                 CH2.add(i);
                                 count++;
                                 break;
                             case 3:
-                                ch_3 += new Byte(i).doubleValue();
+                                ch_3 += Double.parseDouble(new Byte(i).toString());
                                 CH3.add(i);
                                 count++;
                                 break;
                             case 4:
-                                ch_4 += new Byte(i).doubleValue();
+                                ch_4 += Double.parseDouble(new Byte(i).toString());
                                 CH4.add(i);
                                 count++;
                                 break;
                             case 5:
-                                ch_5 += new Byte(i).doubleValue();
+                                ch_5 += Double.parseDouble(new Byte(i).toString());
                                 CH5.add(i);
                                 count++;
                                 break;
                             case 6:
-                                ch_6 += new Byte(i).doubleValue();
+                                ch_6 += Double.parseDouble(new Byte(i).toString());
                                 CH6.add(i);
                                 count++;
                                 break;
                             case 7:
-                                ch_7 += new Byte(i).doubleValue();
+                                ch_7 += Double.parseDouble(new Byte(i).toString());
                                 CH7.add(i);
                                 count = 0;
                                 break;
