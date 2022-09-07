@@ -23,6 +23,8 @@ public class DatabaseUtil {
             "acc_x", "acc_y", "acc_z", "mag_x", "mag_y", "mag_z",
             "ch_01", "ch_02", "ch_03", "ch_04", "ch_05", "ch_06", "ch_07", "ch_08");
 
+
+
     public final static List<String> DATA_TYPES = Arrays.asList("quaternion", "EMG", "EulerAngles", "gyroscope", "magnetometer", "accelerometer");
 
     public static String getTimestamp(){

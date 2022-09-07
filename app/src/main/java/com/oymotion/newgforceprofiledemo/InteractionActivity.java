@@ -292,12 +292,19 @@ public class InteractionActivity extends AppCompatActivity {
 
     //    @OnClick(R.id.btn_start)
     public void onStartClick() {
-        if (notifying) {
-            btn_start_notifying.setText("Start");
+        if (notifying && btn_start_notifying.getText()=="Pause") {
+            btn_start_notifying.setText("Continue");
             btn_start_notifying.setEnabled(true);
             gForceProfile_l.stopDataNotification();
             gForceProfile_r.stopDataNotification();
-            notifying = false;
+            //notifying = false;
+
+            btn_finish.setEnabled(true);
+            btn_reStart.setEnabled(true);
+            countExplore = false;
+
+
+
 //            handler.removeCallbacks(runnable_data_notify);
 //            btn_next.setEnabled(true);
         } else {
@@ -306,17 +313,21 @@ public class InteractionActivity extends AppCompatActivity {
                 return;
             }
 
-            emg_graphView_left.removeAllSeries();
-            emg_graphView_right.removeAllSeries();
-            mEMGPlotting = new EMGPlotting(emg_graphView_left, emg_graphView_right,
-                    checkBox_emg_ch1, checkBox_emg_ch2, checkBox_emg_ch3, checkBox_emg_ch4,
-                    checkBox_emg_ch5, checkBox_emg_ch6, checkBox_emg_ch7, checkBox_emg_ch8);
+            if(!notifying) {
+
+                emg_graphView_left.removeAllSeries();
+                emg_graphView_right.removeAllSeries();
+                mEMGPlotting = new EMGPlotting(emg_graphView_left, emg_graphView_right,
+                        checkBox_emg_ch1, checkBox_emg_ch2, checkBox_emg_ch3, checkBox_emg_ch4,
+                        checkBox_emg_ch5, checkBox_emg_ch6, checkBox_emg_ch7, checkBox_emg_ch8);
+            }
+
 
             dataNotification(gForceProfile_l, 0);
             dataNotification(gForceProfile_r, 1);
 
             btn_start_notifying.setEnabled(true);
-            btn_start_notifying.setText("Stop");
+            btn_start_notifying.setText("Pause");
             notifying = true;
 //            runnable_data_notify = new Runnable() {
 //                @Override
@@ -329,11 +340,13 @@ public class InteractionActivity extends AppCompatActivity {
                 public void onTick(long millisUntilFinished) {
                     tv_countdown_itr.setText(String.valueOf(millisUntilFinished / 1000) +"S");
                     countExplore = true;
+                    explore_time = millisUntilFinished;
                 }
 
                 public void onFinish() {
                     tv_countdown_itr.setText("Done!");
                     onStartClick();
+                    btn_start_notifying.setEnabled(false);
                     btn_finish.setEnabled(true);
                     btn_reStart.setEnabled(true);
                     countExplore = false;
