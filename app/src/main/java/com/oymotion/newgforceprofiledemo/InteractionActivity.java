@@ -345,6 +345,7 @@ public class InteractionActivity extends AppCompatActivity {
 
                 public void onFinish() {
                     tv_countdown_itr.setText("Done!");
+                    btn_start_notifying.setText("Start");
                     onStartClick();
                     btn_start_notifying.setEnabled(false);
                     btn_finish.setEnabled(true);

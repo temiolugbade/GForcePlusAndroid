@@ -179,7 +179,19 @@ public class FileWritingThread extends HandlerThread {
 
                 } else {
 
-                    s.append("NA");
+                    if (data_key.startsWith("ch")){
+
+
+                        for(int i=1; i<16; i++) {
+                            s.append("NA");
+                            s.append(",");
+                        }
+                        s.append("NA");
+
+
+                    }else {
+                        s.append("NA");
+                    }
 
                 }
 
