@@ -21,33 +21,55 @@ public class FileWritingThread extends HandlerThread {
     private static final String TAG = "FileWritingClass";
 
     private Handler myHandler;
-    private BufferedWriter myWriter;
+
     private String storageDirectoryName = "TCC_GFORCE_OYMOTION";
 
-    private Map<String, Boolean> checkData = new HashMap<>();
 
-    private Map<String, String> tempStore = new HashMap<>();
-
-    List<String> hands = Arrays.asList("left", "right");
+    private String myBegintimestamp;
 
 
 
+    private List<String> hands = Arrays.asList("left", "right");
 
-    public FileWritingThread(String name){
+    private Map<String, BufferedWriter> myWriters = new HashMap<String, BufferedWriter>();
 
-        super(name);
+
+    private List<String> QUATERNION_KEYS_LIST = Arrays.asList("p_id", "prj_id", "itr_id", "itr_type", "hand",
+            "clt_id", "timestamp", "w", "x", "y", "z");
+
+    private List<String> EMG_KEYS_LIST = Arrays.asList("p_id", "prj_id", "itr_id", "itr_type", "hand",
+            "clt_id", "timestamp", "ch_01", "ch_02", "ch_03", "ch_04", "ch_05", "ch_06", "ch_07", "ch_08");
+
+    private List<String> EULERANGLES_KEYS_LIST = Arrays.asList("p_id", "prj_id", "itr_id", "itr_type", "hand",
+            "clt_id", "timestamp", "pitch", "roll", "yaw");
+
+    private List<String> GYROSCOPE_KEYS_LIST = Arrays.asList("p_id", "prj_id", "itr_id", "itr_type", "hand",
+            "clt_id", "timestamp", "gyr_x", "gyr_y", "gyr_z");
+
+    private List<String> MAGNETOMETER_KEYS_LIST = Arrays.asList("p_id", "prj_id", "itr_id", "itr_type", "hand",
+            "clt_id", "timestamp", "mag_x", "mag_y", "mag_z");
+
+    private List<String> ACCELEROMETER_KEYS_LIST = Arrays.asList("p_id", "prj_id", "itr_id", "itr_type", "hand",
+            "clt_id", "timestamp", "acc_x", "acc_y", "acc_z");
+
+    private File datafolder;
+
+
+
+    private String experience_filename = storageDirectoryName + " experience.txt";
+
+
+
+    public FileWritingThread(String begintimestamp){
+
+        super(begintimestamp);
         myHandler = new Handler(Looper.myLooper());
 
-        createWriteFolder();
+        myBegintimestamp = begintimestamp;
 
-        try {
-            myWriter.write(create_header());
-            myWriter.newLine();
-        } catch (IOException e) {
-        Log.d("EXPECTED", "Something went wrong in writing data to file");
-        }
+        datafolder = createWriteFilesBasic();
 
-        reset();
+
 
 
     }
@@ -56,31 +78,108 @@ public class FileWritingThread extends HandlerThread {
         return myHandler;
     }
 
+    public File createWriteFilesBasic(){
 
-    private void createWriteFolder(){
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
             //fail safely
             Log.i(TAG, "I CANNOT write to storage");
-        }else{
+
+            return null;
+        }else {
 
             File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
                     storageDirectoryName);
 
             if (!dir.mkdirs()) {
-                if(!dir.exists()) {
+                if (!dir.exists()) {
                     Log.i(TAG, "Could NOT create directory");
                 }
             }
 
-            File file = new File(dir, storageDirectoryName+" "+DatabaseUtil.getDateTime()+".txt");
-            try {
-                myWriter = new BufferedWriter(new FileWriter(file));
-            }catch(IOException e){
-                Log.i(TAG, "Writer NOT created");
+
+            File thisdatafolder = new File(dir, storageDirectoryName + " " + myBegintimestamp);
+
+            if (!thisdatafolder.mkdirs()) {
+                if (!dir.exists()) {
+                    Log.i(TAG, "Could NOT create data folder");
+                }
             }
 
+            return thisdatafolder;
+
+        }
+    }
 
 
+    public void createWriteExperienceFiles(){
+
+        File experience_file = new File(datafolder, experience_filename);
+
+        try {
+            BufferedWriter myExperienceWriter = new BufferedWriter(new FileWriter(experience_file));
+            myExperienceWriter.write(create_header_experience());
+            myExperienceWriter.close();
+        } catch (IOException e) {
+
+            Log.i(TAG, "Writer NOT created for experience");
+        }
+
+
+
+    }
+
+    public void createWriteSensorFiles(){
+
+
+        for (String hand : hands) {
+            for (String data_type : DatabaseUtil.DATA_TYPES) {
+
+                File file = new File(datafolder,
+                        storageDirectoryName + " " + hand + " " +data_type + ".txt");
+                try {
+                    BufferedWriter myWriter = new BufferedWriter(new FileWriter(file));
+                    myWriter.write(create_header(data_type));
+                    myWriter.newLine();
+                    myWriters.put(hand+data_type, myWriter);
+                } catch (IOException e) {
+
+                    Log.i(TAG, "Writer NOT created for "+data_type);
+                }
+            }
+
+        }
+
+
+
+    }
+
+    public void writeExperienceToFile(List<String> experience_data) {
+
+        File experience_file = new File(datafolder, experience_filename);
+
+        StringBuilder s = new StringBuilder();
+        s.append(DatabaseUtil.getDateTime());
+
+        for(String val : experience_data) {
+
+            s.append(",");
+            s.append(val);
+
+        }
+
+        try {
+
+            BufferedWriter myExperienceWriter = new BufferedWriter(new FileWriter(experience_file, true));
+            myExperienceWriter.newLine();
+            myExperienceWriter.write(s.toString());
+
+            myExperienceWriter.close();
+
+            Log.d("EXPECTED", "Experience added to file");
+
+
+        } catch (IOException e) {
+            Log.d("EXPECTED", "Something went wrong in writing data to file");
         }
 
     }
@@ -90,115 +189,92 @@ public class FileWritingThread extends HandlerThread {
         String hand = "none";
 
 
-        if (data.getAsInteger("hand") == 0){
+        if (data.getAsInteger("hand") == 0) {
 
             hand = "left";
 
-        } else if (data.getAsInteger("hand") == 1){
+        } else if (data.getAsInteger("hand") == 1) {
 
             hand = "right";
 
         }
 
-        String data_type = hand+data.get("data_type");
+        String data_type = data.getAsString("data_type");
+
+        Map<String, String> tempStore = new HashMap<>();
 
 
-
-        for (String type : checkData.keySet()) {
-
-
-            if (data_type.equals(type)) {
+        for (String data_key : DatabaseUtil.DATA_KEYS_LIST) {
 
 
+            if (data.containsKey(data_key)) {
 
-                if (checkData.get(type)) {
+                String val = data.getAsString(data_key);
 
-                    write_basic(tempStore);
-                    reset();
+
+                if (data_type.endsWith("EMG") && data_key.startsWith("ch")) {
+
+
+                    val = val.substring(1, val.length() - 1);
 
 
                 }
 
-                for (String data_keys : DatabaseUtil.DATA_KEYS_LIST) {
 
-                    checkData.put(type, true);
-                    if(data.containsKey(data_keys)) {
-
-                        String key = hand+data_keys;
-                        String val = data.getAsString(data_keys);
-
-
-                        if (type.endsWith("EMG") && data_keys.startsWith("ch")){
-
-
-
-                            val = val.substring(1, val.length()-1);
-
-
-
-                        }
-
-
-                        tempStore.put(key, val);
-                        }
-
-
-                    }
-
-
-
+                tempStore.put(data_key, val);
             }
 
 
-
         }
+
+
+        write_basic(tempStore, myWriters.get(hand+data_type), get_keyslist(data_type));
+
+
 
 
     }
 
 
 
-    private void write_basic(Map<String, String> data){
+    private void write_basic(Map<String, String> data, BufferedWriter myWriter, List<String> keyslist){
 
         StringBuilder s = new StringBuilder();
 
+        s.append(DatabaseUtil.getDateTime());
 
 
-        for (String hand : hands) {
+        for (String data_key : keyslist) {
 
-            s.append(DatabaseUtil.getDateTime());
+            s.append(",");
 
-            for (String data_key : DatabaseUtil.DATA_KEYS_LIST) {
-
-                s.append(",");
-
-                if (data.containsKey(hand+data_key)) {
+            if (data.containsKey(data_key)) {
 
 
-                     s.append(data.get(hand+data_key));
+                 s.append(data.get(data_key));
 
-                } else {
+            } else {
 
-                    if (data_key.startsWith("ch")){
+                if (data_key.startsWith("ch")){
 
 
-                        for(int i=1; i<16; i++) {
-                            s.append("NA");
-                            s.append(",");
-                        }
+                    for(int i=1; i<16; i++) {
                         s.append("NA");
-
-
-                    }else {
-                        s.append("NA");
+                        s.append(",");
                     }
+                    s.append("NA");
 
+
+                }else {
+                    s.append("NA");
                 }
-
 
             }
 
+
         }
+
+
 
         try {
 
@@ -217,267 +293,335 @@ public class FileWritingThread extends HandlerThread {
     }
 
 
-    private void reset(){
+    private String create_header_experience(){
 
-        for (String hand : hands) {
-            for (String data_type : DatabaseUtil.DATA_TYPES) {
+        StringBuilder s = new StringBuilder();
 
-                checkData.put(hand+data_type, false);
+        s.append("timestamp");
+        s.append(",");
+        s.append("participant_id");
+        s.append(",");
+        s.append("project_id");
+        s.append(",");
+        s.append("interaction_id");
+        s.append(",");
+        s.append("interaction_type");
+        s.append(",");
+        s.append("material_id");
+        s.append(",");
+        s.append("property_id");
+        s.append(",");
+        s.append("experience");
 
-            }
-        }
 
-        tempStore.clear();
+
+        return s.toString();
 
 
     }
 
-    private String create_header(){
+
+
+    private String create_header(String data_type){
 
         StringBuilder s = new StringBuilder();
 
-        s.append("time_written_to_file");
+        s.append("write_timestamp");
 
-        for (String hand : hands) {
 
-            for (String data_key : DatabaseUtil.DATA_KEYS_LIST) {
 
-                s.append(",");
+        for (String data_key : get_keyslist(data_type)) {
 
-                switch(data_key){
+            s.append(",");
 
-                    case "p_id":
+            switch(data_key){
 
-                        s.append("participant_id");
+                case "p_id":
 
-                        break;
+                    s.append("participant_id");
 
-                    case "prj_id":
+                    break;
 
-                        s.append("project_id");
+                case "prj_id":
 
-                        break;
+                    s.append("project_id");
 
-                    case "itr_id":
+                    break;
 
-                        s.append("interaction_id");
+                case "itr_id":
 
-                        break;
+                    s.append("interaction_id");
 
-                    case "itr_type":
+                    break;
 
-                        s.append("interaction_type");
+                case "itr_type":
 
-                        break;
+                    s.append("interaction_type");
 
-                    case "hand":
+                    break;
 
-                        s.append("hand");
+                case "hand":
 
-                        break;
+                    s.append("hand");
 
-                    case "clt_id":
+                    break;
 
-                        s.append("material_id");
+                case "clt_id":
 
-                        break;
+                    s.append("material_id");
 
-                    case "timestamp":
+                    break;
 
-                        s.append(hand+"_time_of_last_sensor_sampled");
+                case "timestamp":
 
-                        break;
+                    s.append("signal_timestamp");
 
-                    case "w":
+                    break;
 
-                        s.append(hand+"_quaternion_w");
+                case "w":
 
-                        break;
+                    s.append("quaternion_w");
 
-                    case "x":
+                    break;
 
-                        s.append(hand+"_quaternion_x");
+                case "x":
 
-                        break;
+                    s.append("quaternion_x");
 
-                    case "y":
+                    break;
 
-                        s.append(hand+"_quaternion_y");
+                case "y":
 
-                        break;
+                    s.append("quaternion_y");
 
-                    case "z":
+                    break;
 
-                        s.append(hand+"_quaternion_z");
+                case "z":
 
-                        break;
+                    s.append("quaternion_z");
 
-                    case "pitch":
+                    break;
 
-                        s.append(hand+"_pitch");
+                case "pitch":
 
-                        break;
+                    s.append("pitch");
 
-                    case "roll":
+                    break;
 
-                        s.append(hand+"_roll");
+                case "roll":
 
-                        break;
+                    s.append("roll");
 
-                    case "yaw":
+                    break;
 
-                        s.append(hand+"_yaw");
+                case "yaw":
 
-                        break;
+                    s.append("yaw");
 
-                    case "gyr_x":
+                    break;
 
-                        s.append(hand+"_gyroscope_x");
+                case "gyr_x":
 
-                        break;
+                    s.append("gyroscope_x");
 
-                    case "gyr_y":
+                    break;
 
-                        s.append(hand+"_gyroscope_y");
+                case "gyr_y":
 
-                        break;
+                    s.append("gyroscope_y");
 
-                    case "gyr_z":
+                    break;
 
-                        s.append(hand+"_gyroscope_z");
+                case "gyr_z":
 
-                        break;
+                    s.append("gyroscope_z");
 
-                    case "acc_x":
+                    break;
 
-                        s.append(hand+"_accelerometer_x");
+                case "acc_x":
 
-                        break;
+                    s.append("accelerometer_x");
 
-                    case "acc_y":
+                    break;
 
-                        s.append(hand+"_accelerometer_y");
+                case "acc_y":
 
-                        break;
+                    s.append("accelerometer_y");
 
-                    case "acc_z":
+                    break;
 
-                        s.append(hand+"_accelerometer_z");
+                case "acc_z":
 
-                        break;
+                    s.append("accelerometer_z");
 
-                    case "mag_x":
+                    break;
 
-                        s.append(hand+"_magnetometer_x");
+                case "mag_x":
 
-                        break;
+                    s.append("magnetometer_x");
 
-                    case "mag_y":
+                    break;
 
-                        s.append(hand+"_magnetometer_y");
+                case "mag_y":
 
-                        break;
+                    s.append("magnetometer_y");
 
-                    case "mag_z":
+                    break;
 
-                        s.append(hand+"_magnetometer_z");
+                case "mag_z":
 
-                        break;
+                    s.append("magnetometer_z");
 
-                    case "ch_01":
+                    break;
 
-                        for(int i=1; i<16; i++) {
-                            s.append(hand+"_emg_channel01_time"+i);
-                            s.append(",");
+                case "ch_01":
 
-                        }
-                        s.append(hand+"_emg_channel01_time"+16);
-                        break;
-
-                    case "ch_02":
-
-                        for(int i=1; i<16; i++) {
-                            s.append(hand+"_emg_channel02_time"+i);
-                            s.append(",");
-
-                        }
-                        s.append(hand+"_emg_channel02_time"+16);
-                        break;
-
-                    case "ch_03":
-
-                        for(int i=1; i<16; i++) {
-                            s.append(hand+"_emg_channel03_time"+i);
-                            s.append(",");
-
-                        }
-                        s.append(hand+"_emg_channel03_time"+16);
-                        break;
-
-                    case "ch_04":
-
-                        for(int i=1; i<16; i++) {
-                        s.append(hand+"_emg_channel04_time"+i);
+                    for(int i=1; i<16; i++) {
+                        s.append("emg_channel01_time"+i);
                         s.append(",");
 
                     }
-                    s.append(hand+"_emg_channel04_time"+16);
-                        break;
+                    s.append("emg_channel01_time"+16);
+                    break;
 
-                    case "ch_05":
+                case "ch_02":
 
-                        for(int i=1; i<16; i++) {
-                            s.append(hand+"_emg_channel05_time"+i);
-                            s.append(",");
+                    for(int i=1; i<16; i++) {
+                        s.append("emg_channel02_time"+i);
+                        s.append(",");
 
-                        }
-                        s.append(hand+"_emg_channel05_time"+16);
-                        break;
+                    }
+                    s.append("emg_channel02_time"+16);
+                    break;
 
-                    case "ch_06":
+                case "ch_03":
 
-                        for(int i=1; i<16; i++) {
-                            s.append(hand+"_emg_channel06_time"+i);
-                            s.append(",");
+                    for(int i=1; i<16; i++) {
+                        s.append("emg_channel03_time"+i);
+                        s.append(",");
 
-                        }
-                        s.append(hand+"_emg_channel06_time"+16);
-                        break;
+                    }
+                    s.append("emg_channel03_time"+16);
+                    break;
 
-                    case "ch_07":
+                case "ch_04":
 
-                        for(int i=1; i<16; i++) {
-                            s.append(hand+"_emg_channel07_time"+i);
-                            s.append(",");
-
-                        }
-                        s.append(hand+"_emg_channel07_time"+16);
-                        break;
-
-                    case "ch_08":
-
-                        for(int i=1; i<16; i++) {
-                            s.append(hand+"_emg_channel08_time"+i);
-                            s.append(",");
-
-                        }
-                        s.append(hand+"_emg_channel08_time"+16);
-                        break;
-
-
-
+                    for(int i=1; i<16; i++) {
+                    s.append("emg_channel04_time"+i);
+                    s.append(",");
 
                 }
+                s.append("emg_channel04_time"+16);
+                    break;
+
+                case "ch_05":
+
+                    for(int i=1; i<16; i++) {
+                        s.append("emg_channel05_time"+i);
+                        s.append(",");
+
+                    }
+                    s.append("emg_channel05_time"+16);
+                    break;
+
+                case "ch_06":
+
+                    for(int i=1; i<16; i++) {
+                        s.append("emg_channel06_time"+i);
+                        s.append(",");
+
+                    }
+                    s.append("emg_channel06_time"+16);
+                    break;
+
+                case "ch_07":
+
+                    for(int i=1; i<16; i++) {
+                        s.append("emg_channel07_time"+i);
+                        s.append(",");
+
+                    }
+                    s.append("emg_channel07_time"+16);
+                    break;
+
+                case "ch_08":
+
+                    for(int i=1; i<16; i++) {
+                        s.append("emg_channel08_time"+i);
+                        s.append(",");
+
+                    }
+                    s.append("emg_channel08_time"+16);
+                    break;
+
 
 
 
             }
 
+
+
         }
+
+
 
         return s.toString();
 
     }
+
+
+    private List<String> get_keyslist(String data_type){
+
+        List<String> list = Arrays.asList();
+
+        switch(data_type){
+            case "quaternion":
+
+                list = QUATERNION_KEYS_LIST;
+
+                break;
+
+            case "EMG":
+
+                list = EMG_KEYS_LIST;
+
+                break;
+
+            case "EulerAngles":
+
+                list = EULERANGLES_KEYS_LIST;
+
+                break;
+
+            case "gyroscope":
+
+                list = GYROSCOPE_KEYS_LIST;
+
+                break;
+
+            case "magnetometer":
+
+                list = MAGNETOMETER_KEYS_LIST;
+
+                break;
+
+
+            case "accelerometer":
+
+
+                list = ACCELEROMETER_KEYS_LIST;
+
+                break;
+
+        }
+
+
+        return list;
+
+
+    }
+
+
 
 
 }

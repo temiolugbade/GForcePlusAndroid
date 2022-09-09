@@ -1,7 +1,11 @@
 package com.oymotion.newgforceprofiledemo;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -14,6 +18,7 @@ import android.text.Html;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,12 +28,17 @@ import com.oymotion.gforceprofile.GForceProfile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class InteractionActivity extends AppCompatActivity {
+public class InteractionActivity extends AppCompatActivity
+        implements MidInteractionDialogFragment.MidInteractionDialogListener{
 
     private static final String TAG = "InteractionActivity";
 
@@ -110,8 +120,11 @@ public class InteractionActivity extends AppCompatActivity {
 
     private FileWritingThread mFileWriteThread;
     private Handler mFileWriteHandler;
+    private String mFileWritingBegintimestamp;
 
     private EMGPlotting mEMGPlotting;
+
+
 
 
     @Override
@@ -190,7 +203,10 @@ public class InteractionActivity extends AppCompatActivity {
         handler.post(runnable);
 
 
-        mFileWriteThread = new FileWritingThread("FileWritingThread");
+        mFileWritingBegintimestamp = DatabaseUtil.getDateTime();
+        mFileWriteThread = new FileWritingThread(mFileWritingBegintimestamp);
+        mFileWriteThread.createWriteSensorFiles();
+        mFileWriteThread.createWriteExperienceFiles();
         mFileWriteThread.start();
         mFileWriteHandler = mFileWriteThread.getHandler();
 
@@ -198,7 +214,7 @@ public class InteractionActivity extends AppCompatActivity {
         emg_graphView_left = findViewById(R.id.EMG_GraphView_left);
         emg_graphView_left.setTitle("EMG Signals - LEFT HAND");
         emg_graphView_left.setTitleColor(R.color.purple_200);
-        emg_graphView_left.setTitleTextSize(50);
+        emg_graphView_left.setTitleTextSize(40);
 
         emg_graphView_right = findViewById(R.id.EMG_GraphView_right);
         emg_graphView_right.setTitle("EMG Signals - RIGHT HAND");
@@ -216,6 +232,28 @@ public class InteractionActivity extends AppCompatActivity {
         checkBox_emg_ch8 = findViewById(R.id.checkBox_ch8);
 
 
+
+    }
+
+    public void showMidInteractionDialog() {
+
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new MidInteractionDialogFragment();
+
+        dialog.show(getSupportFragmentManager(), "MidInteractionDialogFragment");
+    }
+
+
+    @Override
+    public void getResponse(String response) {
+
+
+
+        System.out.println("BBB: "+response);
+
+
+        // User touched the dialog's positive button
+        write_midinteraction_experience(response);
 
     }
 
@@ -303,6 +341,8 @@ public class InteractionActivity extends AppCompatActivity {
             btn_reStart.setEnabled(true);
             countExplore = false;
 
+            showMidInteractionDialog();
+
 
 
 //            handler.removeCallbacks(runnable_data_notify);
@@ -345,9 +385,10 @@ public class InteractionActivity extends AppCompatActivity {
 
                 public void onFinish() {
                     tv_countdown_itr.setText("Done!");
-                    btn_start_notifying.setText("Start");
+
                     onStartClick();
                     btn_start_notifying.setEnabled(false);
+
                     btn_finish.setEnabled(true);
                     btn_reStart.setEnabled(true);
                     countExplore = false;
@@ -359,6 +400,7 @@ public class InteractionActivity extends AppCompatActivity {
 
         }
     }
+
 
     @OnClick(R.id.btn_finish)
     public void onNextClick() {
@@ -402,15 +444,21 @@ public class InteractionActivity extends AppCompatActivity {
 //
 //        }
 //        startActivity(intent);
+        btn_start_notifying.setEnabled(false);
         Log.i(TAG, "onNextClick: "+"itr_type: "+itr_type);
         Exploration.finishExploration(db, Exploration.State.FINISHED, expl_id, itr_id);
         if(itr_type > 0){
 //            Exploration.finishExploration(db, Exploration.State.FINISHED, expl_id, itr_id);
             interaction.updateState(db, Interaction.State.FINISHED);
             intent = new Intent(InteractionActivity.this, SurveyActivity.class);
-            intent.putExtra("ppt_id1", itr_type);
+            intent.putExtra("clt_id", clt_id);
+            intent.putExtra("p_id", p_id);
+            intent.putExtra("ppt_id", ppt_id);
+            intent.putExtra("itr_id", itr_id);
+            intent.putExtra("itr_type", itr_type);
             intent.putExtra("ppt_name", ppt_name);
             intent.putExtra("explore_id", expl_id);
+            intent.putExtra("datafolder_timestamp", mFileWritingBegintimestamp);
             Log.i(TAG, "onNextClick: ppt_id: "+ppt_id);
             startActivity(intent);
         }
@@ -961,6 +1009,22 @@ public class InteractionActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void write_midinteraction_experience(String experience){
+
+
+
+
+        List<String> experience_data = new ArrayList<String>();
+        experience_data.add(String.valueOf(p_id));
+        experience_data.add(String.valueOf(prj_id));
+        experience_data.add(String.valueOf(itr_id));
+        experience_data.add(String.valueOf(itr_type));
+        experience_data.add(String.valueOf(clt_id));
+        experience_data.add(String.valueOf(ppt_id));
+        experience_data.add(experience);
+        mFileWriteThread.writeExperienceToFile(experience_data);
     }
 
 

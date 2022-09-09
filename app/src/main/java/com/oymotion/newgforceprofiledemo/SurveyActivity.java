@@ -1,5 +1,7 @@
 package com.oymotion.newgforceprofiledemo;
 
+import static java.util.Objects.isNull;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -12,6 +14,10 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,6 +55,9 @@ public class SurveyActivity extends AppCompatActivity {
     int clt_id;
     int prj_id;
     Property property;
+    String datafolder_timestamp;
+
+    private FileWritingThread mFileWriteThread;
 
 
     @Override
@@ -74,9 +83,13 @@ public class SurveyActivity extends AppCompatActivity {
 
         Intent intent = this.getIntent();
 
-        ppt_id = intent.getIntExtra("ppt_id1",-1);
+        clt_id = intent.getIntExtra("clt_id",-1);
+        p_id = intent.getIntExtra("p_id",-1);
+        ppt_id = intent.getIntExtra("ppt_id",-1);
         explore_id = intent.getIntExtra("explore_id",-1);
-        itr_type = intent.getIntExtra("ppt_id",-1);
+        itr_type = intent.getIntExtra("itr_type",-1);
+        itr_id = intent.getIntExtra("itr_id",-1);
+        datafolder_timestamp = intent.getStringExtra("datafolder_timestamp");
         Log.i(TAG, "onCreate: ppt_id"+ppt_id);
         property = Property.getProperty(db, ppt_id);
         Log.i(TAG, "onCreate: property"+property.toString());
@@ -97,6 +110,10 @@ public class SurveyActivity extends AppCompatActivity {
 
         Log.i(TAG, "Initial Information: " + "clt_id:" + clt_id +  "itr_type:" + itr_type);
         btn_next.setEnabled(false);
+
+        mFileWriteThread = new FileWritingThread(datafolder_timestamp);
+
+
     }
 
     private void initQuestion() {
@@ -168,6 +185,16 @@ public class SurveyActivity extends AppCompatActivity {
 
                 //default
         Exploration.updateRating(db, rating, explore_id);
+        List<String> experience_data = new ArrayList<String>();
+        experience_data.add(String.valueOf(p_id));
+        experience_data.add(String.valueOf(prj_id));
+        experience_data.add(String.valueOf(itr_id));
+        experience_data.add(String.valueOf(itr_type));
+        experience_data.add(String.valueOf(clt_id));
+        experience_data.add(String.valueOf(ppt_id));
+        experience_data.add(String.valueOf(rating));
+
+        mFileWriteThread.writeExperienceToFile(experience_data);
         finish();
         }
 

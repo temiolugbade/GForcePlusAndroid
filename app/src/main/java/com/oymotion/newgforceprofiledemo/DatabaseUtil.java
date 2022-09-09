@@ -27,6 +27,11 @@ public class DatabaseUtil {
 
     public final static List<String> DATA_TYPES = Arrays.asList("quaternion", "EMG", "EulerAngles", "gyroscope", "magnetometer", "accelerometer");
 
+
+
+
+
+
     public static String getTimestamp(){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         String timestamp = sdf.format(new Date());

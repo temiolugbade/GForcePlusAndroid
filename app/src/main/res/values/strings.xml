@@ -30,5 +30,9 @@
     <string name="edit">edit</string>
 
 
+    <!--mid interaction dialog-->
+    <string name="mid_interaction_query">"Please enter your notes if any. Submit when done."</string>
+    <string name="mid_interaction_complete_button">"Submit"</string>
+
 
 </resources>
