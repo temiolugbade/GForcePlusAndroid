@@ -10,13 +10,20 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.DocumentsContract;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -88,6 +95,8 @@ public class ScanDevicesActivity extends AppCompatActivity {
                             Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     ACCESS_LOCATION);// 自定义常量,任意整型
         }
+
+
     }
 
     private boolean hasAllPermissionGranted(int[] grantResults) {
@@ -105,6 +114,7 @@ public class ScanDevicesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scan_devices);
         ButterKnife.bind(this);
         this.setTitle("Search for Armbands");
+
 
         leftSelected = findViewById(R.id.tv_left_select);
         rightSelected = findViewById(R.id.tv_right_select);
@@ -163,6 +173,7 @@ public class ScanDevicesActivity extends AppCompatActivity {
         });
 
     }
+
 
     @OnClick(R.id.scan_toggle_btn)
     public void onScanToggleClick() {

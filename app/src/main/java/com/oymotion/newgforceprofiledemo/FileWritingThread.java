@@ -1,6 +1,7 @@
 package com.oymotion.newgforceprofiledemo;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -22,10 +23,8 @@ public class FileWritingThread extends HandlerThread {
 
     private Handler myHandler;
 
-    private String storageDirectoryName = "TCC_GFORCE_OYMOTION";
+    private String storagePrefix = "TCC_GFORCE_OYMOTION";
 
-
-    private String myBegintimestamp;
 
 
 
@@ -56,18 +55,16 @@ public class FileWritingThread extends HandlerThread {
 
 
 
-    private String experience_filename = storageDirectoryName + " experience.txt";
+    private String experience_filename = storagePrefix + " experience.txt";
 
 
 
-    public FileWritingThread(String begintimestamp){
+    public FileWritingThread(String path){
 
-        super(begintimestamp);
+        super(path);
         myHandler = new Handler(Looper.myLooper());
 
-        myBegintimestamp = begintimestamp;
-
-        datafolder = createWriteFilesBasic();
+        datafolder = new File(path);
 
 
 
@@ -78,17 +75,23 @@ public class FileWritingThread extends HandlerThread {
         return myHandler;
     }
 
-    public File createWriteFilesBasic(){
+
+
+    public static String createWriteFilesBasic(Context c){
+
+        String storageDirectoryName = "TCC_GFORCE_OYMOTION";
 
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
             //fail safely
             Log.i(TAG, "I CANNOT write to storage");
 
             return null;
+
         }else {
 
-            File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                    storageDirectoryName);
+            File dir = new File(c.getExternalFilesDir(null), storageDirectoryName);
+
+            Log.i(TAG, c.getExternalFilesDir(null).getAbsolutePath());
 
             if (!dir.mkdirs()) {
                 if (!dir.exists()) {
@@ -97,7 +100,7 @@ public class FileWritingThread extends HandlerThread {
             }
 
 
-            File thisdatafolder = new File(dir, storageDirectoryName + " " + myBegintimestamp);
+            File thisdatafolder = new File(dir, storageDirectoryName + " " + DatabaseUtil.getDateTime());
 
             if (!thisdatafolder.mkdirs()) {
                 if (!dir.exists()) {
@@ -105,9 +108,11 @@ public class FileWritingThread extends HandlerThread {
                 }
             }
 
-            return thisdatafolder;
 
+            return thisdatafolder.getAbsolutePath();
         }
+
+
     }
 
 
@@ -135,7 +140,7 @@ public class FileWritingThread extends HandlerThread {
             for (String data_type : DatabaseUtil.DATA_TYPES) {
 
                 File file = new File(datafolder,
-                        storageDirectoryName + " " + hand + " " +data_type + ".txt");
+                        storagePrefix + " " + hand + " " +data_type + ".txt");
                 try {
                     BufferedWriter myWriter = new BufferedWriter(new FileWriter(file));
                     myWriter.write(create_header(data_type));
@@ -273,6 +278,8 @@ public class FileWritingThread extends HandlerThread {
 
 
         }
+
+
 
 
 

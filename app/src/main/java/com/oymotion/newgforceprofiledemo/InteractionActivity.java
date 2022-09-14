@@ -7,6 +7,7 @@ import androidx.fragment.app.DialogFragment;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
@@ -203,8 +204,9 @@ public class InteractionActivity extends AppCompatActivity
         handler.post(runnable);
 
 
-        mFileWritingBegintimestamp = DatabaseUtil.getDateTime();
-        mFileWriteThread = new FileWritingThread(mFileWritingBegintimestamp);
+
+
+        mFileWriteThread = new FileWritingThread(FileWritingThread.createWriteFilesBasic(this.getApplicationContext()));
         mFileWriteThread.createWriteSensorFiles();
         mFileWriteThread.createWriteExperienceFiles();
         mFileWriteThread.start();
