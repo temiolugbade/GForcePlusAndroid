@@ -58,9 +58,11 @@ public class EMGPlotting{
 
     private int plotsampling_rate = 1;
 
-    private boolean one_hand_loaded = false;
+    private int timeaxis_max = 100;
 
-    private Lock l = new ReentrantLock();
+    private int left_timeaxis_max = timeaxis_max;
+
+    private int right_timeaxis_max = timeaxis_max;
 
 
 
@@ -143,6 +145,9 @@ public class EMGPlotting{
 
         }
 
+        int time = (leftframecount > rightframecount) ? leftframecount : rightframecount;
+        left_timeaxis_max = update_time_axis(myGraphView_left, time, left_timeaxis_max);
+        right_timeaxis_max = update_time_axis(myGraphView_right, time, right_timeaxis_max);
 
     }
 
@@ -152,6 +157,22 @@ public class EMGPlotting{
 
         series.appendData(new DataPoint(frame, emg_val),
                 false, frame + 1);
+
+    }
+
+    private int update_time_axis(GraphView graph, int time, int time_max){
+
+        int margin = 50;
+
+        if (time_max - time <= margin){
+
+            time_max = time_max + margin;
+            graph.getViewport().setMaxX(time_max);
+
+        }
+
+        return time_max;
+
 
     }
 
@@ -199,19 +220,20 @@ public class EMGPlotting{
                           LineGraphSeries<DataPoint> series8){
 
 
+        graph.getViewport().setYAxisBoundsManual(true);
+        graph.getViewport().setMinY(-300);
+        graph.getViewport().setMaxY(300);
+        graph.getViewport().setXAxisBoundsManual(true);
+        graph.getViewport().setMinX(0);
+        graph.getViewport().setMaxX(timeaxis_max);
+
+
         set_series(series1, series2, series3, series4, series5, series6, series7, series8);
 
         add_series(graph, series1, series2, series3, series4, series5, series6, series7, series8);
 
 
-
-
         graph.getLegendRenderer().setVisible(true);
-
-        graph.getViewport().setYAxisBoundsManual(true);
-        graph.getViewport().setMinY(-300);
-        graph.getViewport().setMaxY(300);
-
 
 
     }

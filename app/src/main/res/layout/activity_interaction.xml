@@ -106,8 +106,8 @@
 
             <Button
                 android:id="@+id/btn_start_notifying"
-                android:layout_width="128dip"
-                android:layout_height="128dip"
+                android:layout_width="200dip"
+                android:layout_height="100dip"
                 android:layout_gravity="center"
                 android:background="@drawable/start_round"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
