@@ -121,7 +121,7 @@ public class InteractionActivity extends AppCompatActivity
 
     private FileWritingThread mFileWriteThread;
     private Handler mFileWriteHandler;
-    private String mFileWritingBegintimestamp;
+    private String mFileWritingPath;
 
     private EMGPlotting mEMGPlotting;
 
@@ -205,7 +205,7 @@ public class InteractionActivity extends AppCompatActivity
 
 
 
-
+        mFileWritingPath = FileWritingThread.createWriteFilesBasic(this.getApplicationContext());
         mFileWriteThread = new FileWritingThread(FileWritingThread.createWriteFilesBasic(this.getApplicationContext()));
         mFileWriteThread.createWriteSensorFiles();
         mFileWriteThread.createWriteExperienceFiles();
@@ -460,7 +460,7 @@ public class InteractionActivity extends AppCompatActivity
             intent.putExtra("itr_type", itr_type);
             intent.putExtra("ppt_name", ppt_name);
             intent.putExtra("explore_id", expl_id);
-            intent.putExtra("datafolder_timestamp", mFileWritingBegintimestamp);
+            intent.putExtra("datasavepath", mFileWritingPath);
             Log.i(TAG, "onNextClick: ppt_id: "+ppt_id);
             startActivity(intent);
         }

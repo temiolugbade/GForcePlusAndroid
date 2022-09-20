@@ -55,7 +55,7 @@ public class SurveyActivity extends AppCompatActivity {
     int clt_id;
     int prj_id;
     Property property;
-    String datafolder_timestamp;
+    String datasavepath;
 
     private FileWritingThread mFileWriteThread;
 
@@ -89,7 +89,7 @@ public class SurveyActivity extends AppCompatActivity {
         explore_id = intent.getIntExtra("explore_id",-1);
         itr_type = intent.getIntExtra("itr_type",-1);
         itr_id = intent.getIntExtra("itr_id",-1);
-        datafolder_timestamp = intent.getStringExtra("datafolder_timestamp");
+        datasavepath = intent.getStringExtra("datasavepath");
         Log.i(TAG, "onCreate: ppt_id"+ppt_id);
         property = Property.getProperty(db, ppt_id);
         Log.i(TAG, "onCreate: property"+property.toString());
@@ -111,7 +111,7 @@ public class SurveyActivity extends AppCompatActivity {
         Log.i(TAG, "Initial Information: " + "clt_id:" + clt_id +  "itr_type:" + itr_type);
         btn_next.setEnabled(false);
 
-        mFileWriteThread = new FileWritingThread(datafolder_timestamp);
+        mFileWriteThread = new FileWritingThread(datasavepath);
 
 
     }
