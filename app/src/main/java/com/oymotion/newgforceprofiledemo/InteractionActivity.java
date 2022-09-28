@@ -333,17 +333,37 @@ public class InteractionActivity extends AppCompatActivity
     //    @OnClick(R.id.btn_start)
     public void onStartClick() {
         if (notifying && btn_start_notifying.getText()=="Pause") {
-            btn_start_notifying.setText("Continue");
-            btn_start_notifying.setEnabled(true);
-            gForceProfile_l.stopDataNotification();
-            gForceProfile_r.stopDataNotification();
-            //notifying = false;
 
-            btn_finish.setEnabled(true);
-            btn_reStart.setEnabled(true);
-            countExplore = false;
+            if(tv_countdown_itr.getText()=="Done!"){
 
-            showMidInteractionDialog();
+                btn_start_notifying.setText("Start");
+                btn_start_notifying.setEnabled(false);
+                gForceProfile_l.stopDataNotification();
+                gForceProfile_r.stopDataNotification();
+                notifying = false;
+
+                btn_finish.setEnabled(true);
+                btn_reStart.setEnabled(true);
+                countExplore = false;
+
+
+
+            }else {
+
+                btn_start_notifying.setText("Continue");
+                btn_start_notifying.setEnabled(true);
+                gForceProfile_l.stopDataNotification();
+                gForceProfile_r.stopDataNotification();
+                //notifying = false;
+
+                btn_finish.setEnabled(true);
+                btn_reStart.setEnabled(true);
+                countExplore = false;
+
+                showMidInteractionDialog();
+
+
+            }
 
 
 
@@ -370,6 +390,8 @@ public class InteractionActivity extends AppCompatActivity
 
             btn_start_notifying.setEnabled(true);
             btn_start_notifying.setText("Pause");
+            btn_finish.setEnabled(false);
+            btn_reStart.setEnabled(false);
             notifying = true;
 //            runnable_data_notify = new Runnable() {
 //                @Override
@@ -389,11 +411,11 @@ public class InteractionActivity extends AppCompatActivity
                     tv_countdown_itr.setText("Done!");
 
                     onStartClick();
-                    btn_start_notifying.setEnabled(false);
+                    //btn_start_notifying.setEnabled(false);
 
-                    btn_finish.setEnabled(true);
-                    btn_reStart.setEnabled(true);
-                    countExplore = false;
+                    //btn_finish.setEnabled(true);
+                    //btn_reStart.setEnabled(true);
+                    //countExplore = false;
                     this.cancel();
                 }
             }.start();
